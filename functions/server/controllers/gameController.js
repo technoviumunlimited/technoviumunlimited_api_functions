@@ -1,7 +1,6 @@
 const db = require("../models/db");
 
 exports.getGames = async (req, res, next) => {
-	var_dump(paramID);
 	try {
 		const games = [];
 		const query = await db.collection("games").get();
@@ -10,7 +9,6 @@ exports.getGames = async (req, res, next) => {
 		res.status(200).json({ games });
 	} catch (err) {
 		console.error(err);
-
 		res.status(500).send();
 	}
 };

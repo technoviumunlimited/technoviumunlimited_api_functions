@@ -1,7 +1,8 @@
 const admin = require("firebase-admin");
-var serviceAccount = require("../../technoviumunlimited-firebase-adminsdk-6vhe0-d237ed1d36.json");
+const firebaseConfig = require("../../firebase_config");
+
 admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount)
+	credential: admin.credential.cert(firebaseConfig)
 });
 const db = admin.firestore();
 
