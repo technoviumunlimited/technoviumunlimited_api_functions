@@ -1,6 +1,4 @@
-require('dotenv').config({
-	path: '../.ENV',
-})
+require('dotenv').config();
 
 const functions = require("firebase-functions");
 
@@ -19,8 +17,8 @@ const routes = require("./server/routes/routes.js");
 
 app.use("/", routes);
 
-app.get('/ga', (req, res) => {
-	return res.status(200).send("all games here");
+app.get('/test', (req, res) => {
+	return res.status(200).send("test is working");
 });
 // Get games -> get()
 

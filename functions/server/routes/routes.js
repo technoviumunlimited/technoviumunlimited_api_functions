@@ -7,9 +7,9 @@ const userController = require("../controllers/userController");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
-router.get("/api/"+ process.env.API_VERSION +"/games", gameController.getGames);
-router.get("/api/"+ process.env.API_VERSION +"/level/:game_id/levels", scoreController.getLevelsOfGame);
-router.get("/api/"+ process.env.API_VERSION +"/level/:game_id", levelController.getLevelsOfGame);
-router.get("/api/"+ process.env.API_VERSION +"/user/:user_id", authMiddleware, userController.getallUsers);
+router.get("/"+ process.env.API_VERSION +"/games", gameController.getGames);
+router.get("/"+ process.env.API_VERSION +"/level/:game_id/levels/:level_id/", scoreController.getLevelsOfGame);
+router.get("/"+ process.env.API_VERSION +"/level/:game_id", levelController.getLevelsOfGame);
+router.get("/"+ process.env.API_VERSION +"/user/:user_id", authMiddleware, userController.getallUsers);
 
 module.exports = router;

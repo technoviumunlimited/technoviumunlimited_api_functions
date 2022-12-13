@@ -1,3 +1,6 @@
+//https://www.youtube.com/watch?v=hkxyt8FImcM&t=928s&ab_channel=DiligentDev
+//tutorial for implementation
+
 // Express middleware that validates Firebase ID Tokens passed in the Authorization HTTP header.
 // The Firebase ID token needs to be passed as a Bearer token in the Authorization HTTP header like this:
 // `Authorization: Bearer <Firebase ID Token>`.
