@@ -1,21 +1,29 @@
 {
-"functions": [
-	{
-	"source": "functions",
-	"codebase": "default",
-	"ignore": [
-		"node_modules",
-		".git",
-		"firebase-debug.log",
-		"firebase-debug.*.log"
-	]
-	}
-],
-"hosting": {
-	"rewrites": [ {
-		"source": "**",
-		"function": "app",
-		"region": "us-central1" 
-		} ]
+  "emulators": {
+    "functions": {
+      "host": "127.0.0.1",
+      "port": "9300"
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ]
+    }
+  ],
+  "hosting": {
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "app",
+        "region": "us-central1"
+      }
+    ]
   }
 }
