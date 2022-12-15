@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+//  AIzaSyDT3GaLZE7ItE8glSYIaNd-XNkzIm_V9W4
 const functions = require("firebase-functions");
 
 const express = require("express");
@@ -20,6 +20,10 @@ app.use("/", routes);
 app.get('/test', (req, res) => {
 	return res.status(200).send("test is working");
 });
+
+app.get("/", (req, res) => {
+	return res.status(200).send("welcome to technovium unlimited api");
+  });
 // Get games -> get()
 
 // Get Levels -> get()
