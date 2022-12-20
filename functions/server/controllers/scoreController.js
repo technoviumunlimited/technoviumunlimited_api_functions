@@ -55,29 +55,12 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 	//return res.status(500).json(req.body);
 	
 		const data = {
-			id: scenario.scenario._id,
-			name: scenario.scenario.name,
-			description: scenario.scenario.description,
-			language: scenario.scenario.language,
-			author: scenario.scenario.author,
-			draft: scenario.scenario.draft,
-			last_modified: scenario.scenario.last_modified,
-			__v: scenario.scenario.__v,
-			duration: scenario.scenario.duration,
-			grade: scenario.scenario.grade,
-			deleted: scenario.scenario.deleted,
-			view_count: scenario.scenario.view_count,
-			comments_count: scenario.scenario.comments_count,
-			favorites_count: scenario.scenario.favorites_count,
-			activities_duration: scenario.scenario.activities_duration,
-			activities: scenario.scenario.activities,
-			outcomes: scenario.scenario.outcomes,
-			tags: scenario.scenario.tags,
-			students: scenario.scenario.students,
-			created: scenario.scenario.created,
-			subjects: scenario.scenario.subjects,
+			gameID: scenario.scenario.gameID,
+			levelID: scenario.scenario.levelID,
+			userID: scenario.scenario.userID,
 		};
-		await db.collection("scenarios").doc(scenario.scenario._id).set(data);
+		// games game_id levels, level_id, score_users user_id -> created finished
+		await db.collection("games/HEAryAXZyQgzqa5AOoey/levels/1/").doc(scenario.scenario.gameID).set(data);
 	}
 	
 	exports.functionName =
@@ -85,14 +68,14 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			
 			try {
 			
-				const scenario = await fetchScenarioJSON(request.query.id);
+				const scenario = await fetchScenarioJSON(request.query.gameID);
 				if (typeof scenario === "string") {
 					if (scenario.includes("not valid json")) {
 						response.send("not valid json");
 					}
 				} else {
 					await addDataToFirestore(scenario);  // See the await here
-					response.send(`Done! Added scenario with ID ${request.query.id} to the app database.`);
+					response.send(`Done! Added scenario with ID ${request.query.gameID} to the app database.`);
 				}
 			} catch (error) {
 				// ...
