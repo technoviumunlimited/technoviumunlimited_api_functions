@@ -32,3 +32,4 @@ app.get("/", (req, res) => {
 
 //exports
 exports.app = functions.https.onRequest(app);
+
