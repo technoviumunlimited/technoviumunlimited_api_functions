@@ -12,6 +12,6 @@ router.get("/"+ process.env.API_VERSION +"/level/:game_id/levels/:level_id/", sc
 router.get("/"+ process.env.API_VERSION +"/level/:game_id", levelController.getLevelsOfGame);
 router.get("/"+ process.env.API_VERSION +"/user/:user_id", authMiddleware, userController.getallUsers);
 router.get("/" + process.env.API_VERSION +"/score/:game_id/users/level_data", authMiddleware, scoreController.getLevelData)
-router.get("/" + process.env.API_VERSION +"/score/:game_id/:level_id", authMiddleware, scoreController.insertLevelUserScoreData)
+router.post("/" + process.env.API_VERSION +"/score/insert", authMiddleware, scoreController.insertLevelUserScoreData)
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const db = require("../models/db");
+const { db } = require("../models/db");
 
 exports.getLevelsOfGame = async (req, res, next) => {
 	let paramID = req.params.id;
@@ -48,8 +48,11 @@ exports.getLevelData = async (req, res, next) => {
 exports.insertLevelUserScoreData = async (req, res, next) => {
 	let gameID = req.params.game_id;
 	let levelID = req.params.level_id;
-	let user = req.user;
+	let userID = req.user.user_id;
+	console.log(userID);
 	
+	console.log(req.body)
+	//return res.status(500).json(req.body);
 	try {
 		score_users = [];
 		level_datas = [];

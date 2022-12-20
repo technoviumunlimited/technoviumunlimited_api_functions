@@ -1,4 +1,4 @@
-const db = require("../models/db");
+const { db } = require("../models/db");
 
 exports.getLevelsOfGame = async (req, res, next) => {
 	let paramID = req.params.game_id;
