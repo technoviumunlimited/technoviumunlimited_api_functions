@@ -89,3 +89,7 @@ Om met Technovium Unlimited API te starten...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
+[Express-url]: https://expressjs.com/
+[Express]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
+
