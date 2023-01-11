@@ -69,8 +69,9 @@ Denk aan het volgende: opslaan van resultaten van gespeeld spellen.
 
 ### Gebouwd met
 
-* [![Firebase][firebase.google.com]][Firebase-url]
-* [![Express][expressjs.com]][Express-url]
+* [![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://firebase.google.com)
+* [![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
+* [![Express](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com)
 
 <!-- GETTING STARTED -->
 ## Getting Started
@@ -88,4 +89,3 @@ Om met Technovium Unlimited API te starten...
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
