@@ -57,6 +57,8 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			
 			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
 			
+			if (startedField != "") {
+
 			const seconds = (startedField._fieldsProto.started.timestampValue.seconds);
 			const nanos = (startedField._fieldsProto.started.timestampValue.nanos);
 
@@ -83,13 +85,13 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			var y = Date.now();
 			var mydate = new Date(y);
 			console.log("Current date/time: " + mydate.toString());	
-
+		}
 
 		} catch (error) {
 			console.error(error);
 			res.status(500).send();
 		}
-
+		
 	}
 
 	// exports.functionName =
