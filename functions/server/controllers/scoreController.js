@@ -56,9 +56,9 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 		try{
 			
 			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
-			
-			if (startedField._fieldsProto =! "{}") {
-	
+
+			if (startedField._fieldsProto != "undefined") {		
+
 			const seconds = (startedField._fieldsProto.started.timestampValue.seconds);
 			const nanos = (startedField._fieldsProto.started.timestampValue.nanos);
 
