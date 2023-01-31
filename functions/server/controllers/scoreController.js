@@ -57,8 +57,8 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			
 			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
 			
-			if (startedField != "") {
-
+			if (startedField._fieldsProto =! "{}") {
+	
 			const seconds = (startedField._fieldsProto.started.timestampValue.seconds);
 			const nanos = (startedField._fieldsProto.started.timestampValue.nanos);
 
@@ -85,6 +85,10 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			var y = Date.now();
 			var mydate = new Date(y);
 			console.log("Current date/time: " + mydate.toString());	
+		} else {
+			console.log("No timestamp exists currently");
+			await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).update({"started" : admin.firestore.FieldValue.serverTimestamp()});
+			console.log("Started field created and added timestamp");
 		}
 
 		} catch (error) {
