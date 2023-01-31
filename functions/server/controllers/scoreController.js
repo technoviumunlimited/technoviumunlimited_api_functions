@@ -70,8 +70,10 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 				console.log("Timestamp is 1 hour or more older than the current Timestamp, posting new timestamp");
 				await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"started" : admin.firestore.FieldValue.serverTimestamp()});
 				console.log("Record added!");
+				res.status(201).send("Game lvl timestamp insert");
 			} else {
 				console.log("Timestamp is NOT 1 hour or more older than the current Timestamp, no new record added to firebase");
+				res.status(200).send("Timestamp is NOT 1 hour or more older than the current Timestamp, no new record added to firebase");
 			}
 			
 			//Show date, converted from firebase Timestamp:
@@ -89,6 +91,7 @@ exports.insertLevelUserScoreData = async (req, res, next) => {
 			console.log("No timestamp exists currently");
 			await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"started" : admin.firestore.FieldValue.serverTimestamp()});
 			console.log("Started field created and added timestamp");
+			res.status(201).send();
 		}
 
 		} catch (error) {
