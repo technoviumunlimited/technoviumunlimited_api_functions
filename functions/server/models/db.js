@@ -6,6 +6,9 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+//db.FieldValue.serverTimestamp()
+
+//db.Timestamp.now().toDate()
 
 module.exports = {
 	"db" : db,

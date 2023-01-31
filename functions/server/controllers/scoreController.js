@@ -1,4 +1,4 @@
-const { db } = require("../models/db");
+const { db, admin } = require("../models/db");
 
 exports.getLevelsOfGame = async (req, res, next) => {
 	let paramID = req.params.id;
@@ -46,42 +46,71 @@ exports.getLevelData = async (req, res, next) => {
 }
 
 exports.insertLevelUserScoreData = async (req, res, next) => {
-	let gameID = req.params.game_id;
-	let levelID = req.params.level_id;
+	let gameID = req.body.game_id;
+	let levelID = req.body.level_id;
 	let userID = req.user.user_id;
 	console.log(userID);
-	
-	console.log(req.body)
-	//return res.status(500).json(req.body);
-	
-		const data = {
-			gameID: scenario.scenario.gameID,
-			levelID: scenario.scenario.levelID,
-			userID: scenario.scenario.userID,
-		};
-		// games game_id levels, level_id, score_users user_id -> created finished
-		await db.collection("games/HEAryAXZyQgzqa5AOoey/levels/1/").doc(scenario.scenario.gameID).set(data);
-	}
-	
-	exports.functionName =
-		functions.https.onRequest(async (request, response) => {
+	console.log(gameID);
+	console.log(levelID);
+
+		try{
 			
-			try {
+			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
 			
-				const scenario = await fetchScenarioJSON(request.query.gameID);
-				if (typeof scenario === "string") {
-					if (scenario.includes("not valid json")) {
-						response.send("not valid json");
-					}
-				} else {
-					await addDataToFirestore(scenario);  // See the await here
-					response.send(`Done! Added scenario with ID ${request.query.gameID} to the app database.`);
-				}
-			} catch (error) {
-				// ...
+			const seconds = (startedField._fieldsProto.started.timestampValue.seconds);
+			const nanos = (startedField._fieldsProto.started.timestampValue.nanos);
+
+			const nanosmath = nanos/1000000;
+
+			const correctTimestamp = Math.floor(seconds*1000 + nanosmath);
+
+			if (correctTimestamp <= Date.now()-3600000) {
+				console.log("Timestamp is 1 hour or more older than the current Timestamp, posting new timestamp");
+				await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"started" : admin.firestore.FieldValue.serverTimestamp()});
+				console.log("Record added!");
+			} else {
+				console.log("Timestamp is NOT 1 hour or more older than the current Timestamp, no new record added to firebase");
 			}
+			
+			//Show date, converted from firebase Timestamp:
+			var x = correctTimestamp; //gets the timestamp from firebase
+			var mydate = new Date(x);
+			[mydate.getMonth()];
+			[mydate.getDay()];
+			console.log("Firebase record, date/time: " + mydate.toString());		
+			
+			//Show date, converted from current Timestamp:
+			var y = Date.now();
+			var mydate = new Date(y);
+			console.log("Current date/time: " + mydate.toString());	
+
+
+		} catch (error) {
+			console.error(error);
+			res.status(500).send();
+		}
+
+	}
+
+	// exports.functionName =
+	// 	functions.https.onRequest(async (request, response) => {
+			
+	// 		try {
+			
+	// 			const scenario = await fetchScenarioJSON(request.query.gameID);
+	// 			if (typeof scenario === "string") {
+	// 				if (scenario.includes("not valid json")) {
+	// 					response.send("not valid json");
+	// 				}
+	// 			} else {
+	// 				await addDataToFirestore(scenario);  // See the await here
+	// 				response.send(`Done! Added scenario with ID ${request.query.gameID} to the app database.`);
+	// 			}
+	// 		} catch (error) {
+	// 			// ...
+	// 		}
 	
-		});
+	// 	});
 
 // 	try {
 // 		score_users = [];
