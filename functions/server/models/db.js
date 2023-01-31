@@ -4,6 +4,14 @@ const firebaseConfig = require("../../firebase_config");
 admin.initializeApp({
 	credential: admin.credential.cert(firebaseConfig)
 });
-const db = admin.firestore();
 
-module.exports = db;
+const db = admin.firestore();
+//db.FieldValue.serverTimestamp()
+
+//db.Timestamp.now().toDate()
+
+module.exports = {
+	"db" : db,
+	"admin" : admin
+};
+

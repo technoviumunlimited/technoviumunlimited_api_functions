@@ -1,3 +1,4 @@
+const {admin} = require("../models/db");
 //https://www.youtube.com/watch?v=hkxyt8FImcM&t=928s&ab_channel=DiligentDev
 //tutorial for implementation
 
@@ -6,11 +7,11 @@
 // `Authorization: Bearer <Firebase ID Token>`.
 // when decoded successfully, the ID Token content will be added as `req.user`.
 module.exports = validateFirebaseIdToken = async (req, res, next) => {
-	functions.logger.log('Check if request is authorized with Firebase ID token');
+	console.log('Check if request is authorized with Firebase ID token');
   
 	if ((!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) &&
 		!(req.cookies && req.cookies.__session)) {
-	  functions.logger.error(
+			console.log(
 		'No Firebase ID token was passed as a Bearer token in the Authorization header.',
 		'Make sure you authorize your request by providing the following HTTP header:',
 		'Authorization: Bearer <Firebase ID Token>',
@@ -22,11 +23,11 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
   
 	let idToken;
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-	  functions.logger.log('Found "Authorization" header');
+	  console.log('Found "Authorization" header');
 	  // Read the ID Token from the Authorization header.
 	  idToken = req.headers.authorization.split('Bearer ')[1];
 	} else if(req.cookies) {
-	  functions.logger.log('Found "__session" cookie');
+		console.log('Found "__session" cookie');
 	  // Read the ID Token from cookie.
 	  idToken = req.cookies.__session;
 	} else {
@@ -37,12 +38,12 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
   
 	try {
 	  const decodedIdToken = await admin.auth().verifyIdToken(idToken);
-	  functions.logger.log('ID Token correctly decoded', decodedIdToken);
+	  //console.log('ID Token correctly decoded', decodedIdToken);
 	  req.user = decodedIdToken;
 	  next();
 	  return;
 	} catch (error) {
-	  functions.logger.error('Error while verifying Firebase ID token:', error);
+		console.log('Error while verifying Firebase ID token:', error);
 	  res.status(403).send('Unauthorized');
 	  return;
 	}

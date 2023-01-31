@@ -1,4 +1,4 @@
-const db = require("../models/db");
+const { db } = require("../models/db");
 
 exports.getGames = async (req, res, next) => {
 	try {
