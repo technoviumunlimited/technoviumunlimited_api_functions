@@ -24,6 +24,7 @@ exports.getGames = async (req, res, next) => {
 						category: game.category, 
 						created_by: game.created_by,
 						created: game.created,
+						position: game.position,
 					})
 				});
 		}));
