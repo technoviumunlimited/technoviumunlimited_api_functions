@@ -8,6 +8,7 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 router.get("/"+ process.env.API_VERSION +"/games", gameController.getGames);
+router.get("/"+ process.env.API_VERSION +"/games/:game_id", gameController.getGame);
 router.get("/"+ process.env.API_VERSION +"/level/:game_id/levels/:level_id/", scoreController.getLevelsOfGame);
 router.get("/"+ process.env.API_VERSION +"/level/:game_id", levelController.getLevelsOfGame);
 router.get("/"+ process.env.API_VERSION +"/user/:user_id", authMiddleware, userController.getallUsers);

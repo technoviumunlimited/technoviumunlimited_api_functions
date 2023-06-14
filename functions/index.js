@@ -1,9 +1,6 @@
 require('dotenv').config();
 //  AIzaSyDT3GaLZE7ItE8glSYIaNd-XNkzIm_V9W4
 const functions = require("firebase-functions");
-
-
-
 const express = require("express");
 const cors = require("cors");
 const app = express();
