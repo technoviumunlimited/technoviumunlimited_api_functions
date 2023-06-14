@@ -8,7 +8,7 @@ exports.getGames = async (req, res, next) => {
 			expires: Date.now() + 15 * 60 * 1000, // 15 minutes
 		};
 
-		const query = await db.collection("games").get();
+		const query = await db.collection("games").orderBy('position').get();
 		const data = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
 		const games = await Promise.all(data.map(async (game) => {
 			const thumb =  await storage
