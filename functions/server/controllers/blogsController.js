@@ -18,7 +18,7 @@ exports.getBlogs = async (req, res, next) => {
       data.map(async (blog) => {
         const thumb = await storage
           .bucket("technoviumunlimited.appspot.com")
-          .file("blogs/" + blog.id + "/thumb.png")
+          .file("blog/" + blog.id + "/" + blog.thumb)
           .getSignedUrl(options);
 
         return new Promise((resolve, reject) => {
