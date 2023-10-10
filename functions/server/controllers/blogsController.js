@@ -54,7 +54,7 @@ exports.getBlog = async (req, res, next) => {
     const query = await db.collection("blogs").doc(paramID).get();
     const thumb = await storage
       .bucket("technoviumunlimited.appspot.com")
-      .file("blog/" + paramID + "/" + query.thumb)
+      .file("blog/" + paramID + "/" + query.data().thumb)
       .getSignedUrl(options);
     blog.push({
       ...query.data(),
