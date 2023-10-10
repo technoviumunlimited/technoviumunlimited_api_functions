@@ -57,27 +57,28 @@ exports.getGame = async (req, res, next) => {
             <link rel="stylesheet" href="https://technoviumunlimited.nl/css/unitystyle.css">
           </head>
           <body>
-            <div id="unity-container" class="unity-desktop">
-              <canvas id="unity-canvas" width=960 height=600></canvas>
+            <div id="unity-container" class="unity-desktop" style="position: absolute; width: 100%; height: 100%; overflow:hidden;">
+              <canvas id="unity-canvas" width="100%" height="100%" style="width: 100%; height: 100%"></canvas>
               <div id="unity-loading-bar">
                 <div id="unity-logo"></div>
                 <div id="unity-progress-bar-empty">
                   <div id="unity-progress-bar-full"></div>
                 </div>
               </div>
-              <div id="unity-warning"> </div>
+              <div id="unity-warning"></div>
+              <!--
               <div id="unity-footer">
-                <div id="unity-webgl-logo"></div>
                 <div id="unity-fullscreen-button"></div>
-                <div id="unity-build-title">3d-spin-wheel</div>
               </div>
+              -->
             </div>
             <script>
+              matchWebGLToCanvasSize=false;
               var container = document.querySelector("#unity-container");
               var canvas = document.querySelector("#unity-canvas");
               var loadingBar = document.querySelector("#unity-loading-bar");
               var progressBarFull = document.querySelector("#unity-progress-bar-full");
-              var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+              //var fullscreenButton = document.querySelector("#unity-fullscreen-button");
               var warningBanner = document.querySelector("#unity-warning");
               function unityShowBanner(msg, type) {
                 function updateBannerVisibility() {
@@ -127,8 +128,8 @@ exports.getGame = async (req, res, next) => {
               } else {
                 // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
         
-                canvas.style.width = "960px";
-                canvas.style.height = "600px";
+                canvas.style.width = "100%";
+                canvas.style.height = "100%";
               }
         
               loadingBar.style.display = "block";
@@ -140,9 +141,11 @@ exports.getGame = async (req, res, next) => {
                   progressBarFull.style.width = 100 * progress + "%";
                 }).then((unityInstance) => {
                   loadingBar.style.display = "none";
+                  /*
                   fullscreenButton.onclick = () => {
                     unityInstance.SetFullscreen(1);
                   };
+                  */
                 }).catch((message) => {
                   alert(message);
                 });
