@@ -57,7 +57,7 @@ exports.getGame = async (req, res, next) => {
             <link rel="stylesheet" href="https://technoviumunlimited.nl/css/unitystyle.css">
           </head>
           <body>
-            <div id="unity-container" class="unity-desktop" style="position: absolute; width: 100%; height: 100%">
+            <div id="unity-container" class="unity-desktop" style="position: absolute; width: 100%; height: 100%; overflow:hidden;">
               <canvas id="unity-canvas" width="100%" height="100%" style="width: 100%; height: 100%"></canvas>
               <div id="unity-loading-bar">
                 <div id="unity-logo"></div>
