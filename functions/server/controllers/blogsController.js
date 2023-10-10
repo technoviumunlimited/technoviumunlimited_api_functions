@@ -29,6 +29,7 @@ exports.getBlogs = async (req, res, next) => {
             discription: blog.discription,
             author: blog.author,
             position: blog.position,
+            categorie: blog.categorie,
           });
         });
       })
