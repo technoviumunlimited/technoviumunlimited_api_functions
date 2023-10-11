@@ -44,7 +44,7 @@ exports.getBlogs = async (req, res, next) => {
           description: blog.description, // Corrected the property name
           author: blog.author,
           position: blog.position,
-          categorie: blog.categorie,
+          category: blog.category,
         };
       })
     );
