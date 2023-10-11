@@ -19,5 +19,6 @@ router.post("/" + process.env.API_VERSION +"/score/insert", authMiddleware, scor
 router.post("/" + process.env.API_VERSION +"/score/insert/finished", authMiddleware, scoreController.insertLevelUserScoreDataFinished)
 router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
 router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
+router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
 router.get("/embeddedgames/:game_id", embeddedgameController.getGame);
 module.exports = router;
