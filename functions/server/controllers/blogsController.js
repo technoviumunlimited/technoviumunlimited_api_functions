@@ -4,7 +4,8 @@ exports.getBlogs = async (req, res, next) => {
   try {
     const page = req.query.page ? parseInt(req.query.page) : 1;
     const itemsPerPage = req.query.take ? parseInt(req.query.take) : 10;
-    const category = req.query.category ? req.query.category : null;
+    const category = req.query.category ? req.query.category.toLowerCase() : "";
+    console.log(category);
 
     const options = {
       version: "v4",
