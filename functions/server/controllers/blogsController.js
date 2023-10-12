@@ -46,6 +46,7 @@ exports.getBlogs = async (req, res, next) => {
           author: blog.author,
           position: blog.position,
           category: blog.category,
+          date: blog.date
         };
       })
     );
