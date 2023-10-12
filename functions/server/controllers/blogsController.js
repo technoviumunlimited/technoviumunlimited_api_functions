@@ -1,5 +1,5 @@
 const { db, storage } = require("../models/db");
-
+//TODO fix pagination even if category is added!
 exports.getBlogs = async (req, res, next) => {
   try {
     const page = req.query.page ? parseInt(req.query.page) : 1;
@@ -43,6 +43,7 @@ exports.getBlogs = async (req, res, next) => {
         author: blog.author,
         position: blog.position,
         category: blog.category,
+        date: blog.date
       }));
 
       res.status(200).json({ blogs });
