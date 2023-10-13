@@ -110,10 +110,14 @@ exports.getBlogs = async (req, res, next) => {
 
     const blogs = await Promise.all(
       data.map(async (blog) => {
-        const thumb = await storage
-          .bucket("technoviumunlimited.appspot.com")
-          .file("blog/" + blog.id + "/" + blog.thumb)
-          .getSignedUrl(options);
+        // no need for storage anymore -> it is set to public via google storage
+        // const thumb = await storage
+        //   .bucket("storage.googleapis.com")
+        //   .file("blog/" + blog.id + "/" + blog.thumb)
+        //   .getSignedUrl(options);
+
+        const thumb = "https://storage.googleapis.com/technoviumunlimited.appspot.com/blog/" + blog.id + "/"+ blog.thumb;
+        //https://storage.googleapis.com/technoviumunlimited.appspot.com/blog/4UVRuFzKR0UHOxUs3ax1/thumb.png  
 
         return {
           _id: blog.id,

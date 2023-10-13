@@ -11,11 +11,11 @@ exports.getGames = async (req, res, next) => {
 		const query = await db.collection("games").where("active", "==", true).orderBy('position').get();
 		const data = query.docs.map(doc => ({id: doc.id, ...doc.data()}));
 		const games = await Promise.all(data.map(async (game) => {
-			const thumb =  await storage
-				.bucket('technoviumunlimited.appspot.com')
-				.file('games/' + game.id + "/thumb.png")
-				.getSignedUrl(options);
-
+			// const thumb =  await storage
+			// 	.bucket('technoviumunlimited.appspot.com')
+			// 	.file('games/' + game.id + "/thumb.png")
+			// 	.getSignedUrl(options);
+			const thumb = "https://storage.googleapis.com/technoviumunlimited.appspot.com/games/" + game.id + "/thumb.png";
 				return new Promise((resolve, reject) => {
 					return resolve({
 						_id: game.id, 
@@ -25,6 +25,7 @@ exports.getGames = async (req, res, next) => {
 						created_by: game.created_by,
 						created: game.created,
 						position: game.position,
+						description: game.description,
 					})
 				});
 		}));
