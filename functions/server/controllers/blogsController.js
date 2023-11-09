@@ -151,10 +151,12 @@ exports.getBlog = async (req, res, next) => {
   try {
     const blog = [];
     const query = await db.collection("blogs").doc(paramID).get();
-    const thumb = await storage
-      .bucket("technoviumunlimited.appspot.com")
-      .file("blog/" + paramID + "/" + query.data().thumb)
-      .getSignedUrl(options);
+    // const thumb = await storage
+    //   .bucket("technoviumunlimited.appspot.com")
+    //   .file("blog/" + paramID + "/" + query.data().thumb)
+    //   .getSignedUrl(options);
+
+    const thumb = "https://storage.googleapis.com/technoviumunlimited.appspot.com/blog/" + paramID + "/"+ query.data().thumb;  
     blog.push({
       ...query.data(),
       _id: query.id,

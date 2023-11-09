@@ -54,7 +54,8 @@ exports.getGame = async (req, res, next) => {
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
             <title>Unity WebGL Player | 3d-spin-wheel</title>
             <link rel="shortcut icon" href="TemplateData/favicon.ico">
-            <link rel="stylesheet" href="https://technoviumunlimited.nl/css/unitystyle.css">
+            <link rel="stylesheet" href="https://assets.technoviumunlimited.nl/unity/css/style.css">
+
           </head>
           <body>
             <div id="unity-container" class="unity-desktop" style="position: absolute; width: 100%; height: 100%; overflow:hidden;">
@@ -80,6 +81,7 @@ exports.getGame = async (req, res, next) => {
               var progressBarFull = document.querySelector("#unity-progress-bar-full");
               //var fullscreenButton = document.querySelector("#unity-fullscreen-button");
               var warningBanner = document.querySelector("#unity-warning");
+              
               function unityShowBanner(msg, type) {
                 function updateBannerVisibility() {
                   warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
@@ -133,17 +135,19 @@ exports.getGame = async (req, res, next) => {
               }
         
               loadingBar.style.display = "block";
+              var unityInstance;
         
               var script = document.createElement("script");
               script.src = loaderUrl;
               script.onload = () => {
                 createUnityInstance(canvas, config, (progress) => {
                   progressBarFull.style.width = 100 * progress + "%";
-                }).then((unityInstance) => {
+                }).then((instance) => {
                   loadingBar.style.display = "none";
+                  unityInstance = instance;
                   /*
                   fullscreenButton.onclick = () => {
-                    unityInstance.SetFullscreen(1);
+                    instance.SetFullscreen(1);
                   };
                   */
                 }).catch((message) => {
@@ -151,6 +155,17 @@ exports.getGame = async (req, res, next) => {
                 });
               };
               document.body.appendChild(script);
+              // Add this code to your embedded iframe JavaScript
+              window.addEventListener('message', (event) => {
+                console.log('message', event.origin)
+                // Check if the message is from an allowed origin
+                if (event.origin === 'https://technoviumunlimited.nl') {
+                  if (event.data === 'SetFullscreen') {
+                    // Call the unityInstance.SetFullscreen(1) function
+                    unityInstance.SetFullscreen(1);
+                  }
+                }
+              });
             </script>
           </body>
         </html>
