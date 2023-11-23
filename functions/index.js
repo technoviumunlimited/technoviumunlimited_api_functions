@@ -39,24 +39,47 @@ app.get("/", (req, res) => {
 // Check for firebase triggerse
 const { Octokit } = require("@octokit/rest");
 
-exports.firebaseTriggers = functions.firestore.document('{collection}/{docId}').onWrite(async (change, context) => {
-	const octokit = new Octokit({
-	auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
-	request: {
-		fetch
-	}
-	});
+// Update github file on games collection changes
+exports.firebaseGamesTrigger = functions.firestore.document('games/{docId}').onWrite(async (change, context) => {
+	await updateGithubFile();
+});
 
+// Update github file on blogs collection changes
+exports.firebaseBlogsTrigger = functions.firestore.document('blogs/{docId}').onWrite(async (change, context) => {
+	await updateGithubFile();
+});
+
+// Update github file on blogs_categories collection changes
+exports.firebaseBlogsCategoriesTrigger = functions.firestore.document('blogs_categories/{docId}').onWrite(async (change, context) => {
+	await updateGithubFile();
+});
+
+//exports
+exports.app = functions.https.onRequest(app);
+
+async function updateGithubFile () {
+	const octokit = new Octokit({
+		auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
+		request: {
+			fetch
+		}
+	});
+	
 	try {
+	// Get repo content
 	const response = await octokit.repos.getContent({
 		owner: process.env.GITHUB_USERNAME,
 		repo: process.env.GITHUB_REPO,
 		path: process.env.GITHUB_PATH
 	});
 
+	// Get file content
 	const fileContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+
+	// Change content of file
 	const newContent = parseInt(fileContent) + 1;
 
+	// Update content of file to new content
 	await octokit.repos.createOrUpdateFileContents({
 		owner: process.env.GITHUB_USERNAME,
 		repo: process.env.GITHUB_REPO,
@@ -68,8 +91,4 @@ exports.firebaseTriggers = functions.firestore.document('{collection}/{docId}').
 	} catch (error) {
 	console.error("Error:", error);
 	}
-});
-
-//exports
-exports.app = functions.https.onRequest(app);
-
+}
