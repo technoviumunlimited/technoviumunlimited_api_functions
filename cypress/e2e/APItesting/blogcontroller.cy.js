@@ -1,24 +1,33 @@
+describe('JSON Data Test', () => {
+  let jsonData;
 
-describe('API-test', () => {
-  it('moet een GET-verzoek naar een lokale API maken', () => {
-    cy.request('GET', 'http://127.0.0.1:5001/technoviumunlimited/us-central1/app/v1/blogs') 
-      .should((response) => {
-        expect(response.status).to.eq(200); // Controleer of de statuscode 200 is
-               // Controleer of het JSON-responslichaam een 'blogs' eigenschap heeft
-               expect(response.body).to.have.property('blogs');
-
-               // Controleer of de lijst met blogs niet leeg is
-               expect(response.body.blogs).to.be.an('array').to.not.be.empty;
-       
-               // Controleer of elk blogobject de vereiste eigenschappen heeft
-               response.body.blogs.forEach((blog) => {
-                 expect(blog).to.have.property('_id');
-                 expect(blog).to.have.property('_thumb');
-                 expect(blog).to.have.property('title');
-                 expect(blog).to.have.property('discription');
-                 expect(blog).to.have.property('author');
-                 expect(blog).to.have.property('position');
-               });
+  before(() => {
+    // Fetch the JSON data
+    cy.request('http://api.technoviumunlimited.nl/v1/blogs')
+      .its('body') 
+      .then((body) => {
+        jsonData = body;
       });
   });
+
+  it('Should have a valid JSON response', () => {
+    expect(jsonData).to.not.be.undefined;
+  });
+
+  it('Should have an array of blogs', () => {
+    expect(jsonData).to.have.property('blogs').and.to.be.an('array');
+  });
+
+  it('Should validate the properties of each blog', () => {
+    jsonData.blogs.forEach((blog) => {
+      expect(blog).to.have.property('_id').and.to.be.a('string');
+      expect(blog).to.have.property('title').and.to.be.a('string');
+      expect(blog).to.have.property('description').and.to.be.a('string');
+      expect(blog).to.have.property('author').and.to.be.a('string');
+
+
+    });
+  });
+
+
 });
