@@ -9,6 +9,16 @@ const blogsController = require("../controllers/blogsController");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
+
+router.get("/"+ process.env.API_VERSION +"/teacher-only-route", authMiddleware, (req, res) => {
+    // Controleer of de gebruiker de rol "docent" heeft in de array
+    if (req.user.role && req.user.role.includes('docent')) {
+        // Voer hier de logica uit voor de route
+        res.send('Welkom bij de docent-only route!');
+    } else {
+        res.status(403).send('Geen toegang. Onvoldoende rechten.');
+    }
+});
 router.get("/"+ process.env.API_VERSION +"/games", gameController.getGames);
 router.get("/"+ process.env.API_VERSION +"/games/:game_id", gameController.getGame);
 router.get("/"+ process.env.API_VERSION +"/level/:game_id/levels/:level_id/", scoreController.getLevelsOfGame);

@@ -36,16 +36,45 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
 	  return;
 	}
   
-	try {
-	  const decodedIdToken = await admin.auth().verifyIdToken(idToken);
-	  //console.log('ID Token correctly decoded', decodedIdToken);
-	  req.user = decodedIdToken;
+// In authMiddleware.js
+
+try {
+	const decodedIdToken = await admin.auth().verifyIdToken(idToken);
+	const userId = decodedIdToken.uid;
+	console.log(userId);
+	// Rolgegevens ophalen uit de database (Firestore)
+	const userSnapshot = await admin.firestore().collection('user_groep2').doc(userId).get();
+  
+	if (userSnapshot.exists) {
+	  const userRole = userSnapshot.data().roles;
+		console.log(userRole);
+	  // Voeg de rol toe aan req.user
+	  req.user = { ...decodedIdToken, role: userRole };
 	  next();
 	  return;
-	} catch (error) {
-		console.log('Error while verifying Firebase ID token:', error);
+	} else {
+	  console.log('Gebruiker niet gevonden in de database');
 	  res.status(403).send('Unauthorized');
 	  return;
 	}
-  };
+  } catch (error) {
+	console.log('Error while verifying Firebase ID token:', error);
+	res.status(403).send('Unauthorized');
+	return;
+  }
+	};
+  
+
+// 	try {
+// 	  const decodedIdToken = await admin.auth().verifyIdToken(idToken);
+// 	  //console.log('ID Token correctly decoded', decodedIdToken);
+// 	  req.user = decodedIdToken;
+// 	  next();
+// 	  return;
+// 	} catch (error) {
+// 		console.log('Error while verifying Firebase ID token:', error);
+// 	  res.status(403).send('Unauthorized');
+// 	  return;
+// 	}
+//   };
   
