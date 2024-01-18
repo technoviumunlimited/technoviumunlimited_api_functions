@@ -151,11 +151,11 @@ exports.getBlog = async (req, res, next) => {
   try {
     const blog = [];
     const query = await db.collection("blogs").doc(paramID).get();
-    // const thumb = await storage
-    //   .bucket("technoviumunlimited.appspot.com")
-    //   .file("blog/" + paramID + "/" + query.data().thumb)
-    //   .getSignedUrl(options);
-
+    //  const thumb_replace = await storage
+    //    .bucket("technoviumunlimited.appspot.com")
+    //    .file("blog/" + paramID + "/" + query.data().thumb)
+    //    .getSignedUrl(options);
+console.log(query.data())
     const thumb = "https://storage.googleapis.com/technoviumunlimited.appspot.com/blog/" + paramID + "/"+ query.data().thumb;  
     blog.push({
       ...query.data(),
@@ -217,4 +217,20 @@ exports.getBlogsCategories = async (req, res, next) => {
     console.error(err);
     res.status(500).send();
   }
+};
+
+exports.insert = async (req, res, next) => {
+  if (req.user.role && req.user.role.includes('docent')) {
+    // Voer hier de logica uit voor de route
+    // res.send('Welkom bij de docent-only route!');
+
+    await db.collection("blogs").set({"title" : "hello" , "description" : ""});
+    console.log("Record added!");
+    return res.status(201).send("Game lvl timestamp insert");
+
+
+} else {
+    res.status(403).send('Geen toegang. Onvoldoende rechten.');
+}
+
 };
