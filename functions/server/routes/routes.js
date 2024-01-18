@@ -1,4 +1,5 @@
 const express = require("express");
+const { body, validationResult } = require('express-validator');
 const gameController = require("../controllers/gameController");
 const levelController = require("../controllers/levelController");
 const scoreController = require("../controllers/scoreController");
@@ -30,5 +31,21 @@ router.post("/" + process.env.API_VERSION +"/score/insert/finished", authMiddlew
 router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
 router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
 router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
+
+const validateInsertBlog = [
+  body('title').notEmpty().withMessage('Title is required'),
+  body ('description').notEmpty().withMessage('Description is required'),
+  body('active').isBoolean().withMessage('Active must be a boolean value'),
+  // Add more validation rules as needed for each field
+  (req, res, next) ⇒ {
+    const errors = validation Result(req);
+    if (!errors.isEmpty()) {
+      return res.status (400).json({ errors: errors.array() });
+    next();
+  },
+];
 router.get("/embeddedgames/:game_id", embeddedgameController.getGame);
+router.post("/"+ process.env.API_VERSION +"/blogs/insert", authMiddleware, validateInsertBlog,  blogsController.insertBlog);
 module.exports = router;
+
+

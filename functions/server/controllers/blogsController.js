@@ -183,38 +183,31 @@ exports.getBlog = async (req, res, next) => {
 
 exports.getBlogsCategories = async (req, res, next) => {
   try {
-    const options = {
-      version: "v4",
-      action: "read",
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-    };
-
-    const query = await db
-      .collection("blogs_categories")
-      .where("active", "==", true)
-      .orderBy("position")
-      .get();
-    const data = query.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    const BlogsCategories = await Promise.all(
-      data.map(async (blogCategorie) => {
-        //const thumb = await storage
-        //  .bucket("technoviumunlimited.appspot.com")
-        //  .file("blog/" + blog.id + "/" + blog.thumb)
-        //  .getSignedUrl(options);
-
-        return new Promise((resolve, reject) => {
-          return resolve({
-            _id: blogCategorie.id,
-            //_thumb: thumb,
-            name: blogCategorie.name,
-            position: blogCategorie.position,
-          });
-        });
-      })
-    );
+    
     res.status(200).json({ BlogsCategories });
   } catch (err) {
     console.error(err);
     res.status(500).send();
+  }
+};
+
+exports.insertBlog = async (req, res, next) ⇒ {
+  try {
+    console.log(req.user.role);
+    if (req.user.role && req.user.role.includes('docent')){
+      //res.send('Welkom bij de docent-only route!');
+      await db.collection ("blogs_davor").add({
+        "title": req.body.title,
+        "description": req.body.description,
+        "active": req.body.active
+      });
+      console.log("Record added!");
+  return res.status (201).send("blogpost added");
+    } else {
+      res.status (403).send('Geen toegang. Onvoldoende rechten.');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status (500).send();
   }
 };
