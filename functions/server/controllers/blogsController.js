@@ -191,6 +191,7 @@ exports.getBlogsCategories = async (req, res, next) => {
   }
 };
 
+//add blogpost
 exports.insertBlog = async (req, res, next) ⇒ {
   try {
     console.log(req.user.role);
@@ -204,6 +205,7 @@ exports.insertBlog = async (req, res, next) ⇒ {
       console.log("Record added!");
   return res.status (201).send("blogpost added");
     } else {
+      //if rights are not high enoug this error is trown to prevent unotherised acces
       res.status (403).send('Geen toegang. Onvoldoende rechten.');
     }
   } catch (err) {

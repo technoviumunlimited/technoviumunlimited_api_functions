@@ -20,7 +20,8 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
 	  res.status(403).send('Unauthorized');
 	  return;
 	}
-  
+
+  //makes sure no unotherised people can acces
 	let idToken;
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
 	  console.log('Found "Authorization" header');
@@ -73,6 +74,9 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
 // 	  res.status(403).send('Unauthorized');
 // 	  return;
 // 	}
+
+
+//if there is no token or invalid token this error is trown
   } catch (error) {
 	console.log('Error while verifying Firebase ID token:', error);
 	res.status(403).send('Unauthorized');
