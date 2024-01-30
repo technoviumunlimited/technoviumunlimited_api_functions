@@ -43,7 +43,7 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
 		if (userSnapshot.exists) {
 		  const userRole = userSnapshot.data().roles;
 			console.log(userRole);
-			  //Voeg de rol oe aan req. user
+			  //add role to req. user
 		  req.user = { decodedIdIdToken, role: userRole };
 		  next();
 		  return;
