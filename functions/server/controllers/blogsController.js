@@ -123,7 +123,7 @@ exports.getBlogs = async (req, res, next) => {
           _id: blog.id,
           _thumb: thumb,
           title: blog.title,
-          description: blog.description, // Corrected the property name
+          description: blog.description, 
           author: blog.author,
           position: blog.position,
           category: blog.category,
@@ -211,6 +211,111 @@ exports.getBlogsCategories = async (req, res, next) => {
       })
     );
     res.status(200).json({ BlogsCategories });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+};
+exports.updateBlog = async (req, res, next) => {
+  try {
+    // Check user permissions
+    if (req.user.permissions.includes('edit_blog')) {
+      const { blog_id } = req.params;
+      const { title, description, author, active, date, position, thumb, category } = req.body;
+
+      // Check if required data is present
+      if (!title || !description || !author || !date || !position || !thumb || !category) {
+        return res.status(400).send('Title and description are required.');
+      }
+
+      // Check if the blog exists
+      const blogRef = db.collection("blogs_davor").doc(blog_id);
+      const blogDoc = await blogRef.get();
+
+      if (!blogDoc.exists) {
+        return res.status(404).send('Blog not found.');
+      }
+
+      // Update the blog in the Firestore collection
+      await blogRef.update({
+        title,
+        description,
+        author,
+        date,
+        position,
+        thumb,
+        category,
+        active, 
+      });
+
+      res.status(200).send('Blog updated!');
+    } else {
+      res.status(403).send('Insufficient permissions to update a blog.');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+};
+
+exports.deleteBlog = async (req, res, next) => {
+  try {
+    // Check user permissions
+    if (req.user.permissions.includes('delete_all')) {
+      const { blog_id } = req.params;
+
+      // Check if the blog exists
+      const blogRef = db.collection("blogs_davor").doc(blog_id);
+      const blogDoc = await blogRef.get();
+
+      if (!blogDoc.exists) {
+        return res.status(404).send('Blog not found.');
+      }
+
+      // Delete the blog from the Firestore collection
+      await blogRef.delete();
+
+      res.status(200).send('Blog deleted!');
+    } else {
+      res.status(403).send('Insufficient permissions to delete a blog.');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+};
+
+exports.insertBlog = async (req, res, next) => {   
+     console.log('Gebruikerrechten:', req.user.permissions);
+  try {
+    // Controleer of de gebruiker de juiste rechten heeft (docent of admin)
+    if (req.user.permissions.includes('add_blog')) {
+      const { title, description, author, active, date, position, thumb, category} = req.body;
+
+      // Controleer of de vereiste gegevens aanwezig zijn
+      if (!title || !description || !author || !date || !position || !thumb || !category) {
+        return res.status(400).send('Titel en beschrijving zijn verplicht.');
+      }
+
+      // Voeg de blog toe aan de Firestore-collectie "blogs"
+      const newBlogRef = await db.collection("blogs_davor").add({
+   
+        author: author,
+        date: date,   
+        category: category,
+        description: description,
+        position: position,
+        thumb: thumb,
+        title: title,
+        active: active,
+        // Voeg hier andere velden toe die je wilt opslaan
+      });
+
+    
+      res.status(200).send('Blog toegevoegd!');
+    } else {
+      res.status(403).send('Onvoldoende rechten om een blog toe te voegen.');
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send();

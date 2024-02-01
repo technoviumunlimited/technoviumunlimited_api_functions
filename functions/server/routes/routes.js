@@ -30,7 +30,12 @@ router.get("/" + process.env.API_VERSION +"/score/:game_id/users/level_data", sc
 router.post("/" + process.env.API_VERSION +"/score/insert", authMiddleware, scoreController.insertLevelUserScoreData)
 router.post("/" + process.env.API_VERSION +"/score/insert/finished", authMiddleware, scoreController.insertLevelUserScoreDataFinished)
 router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
+// router.post(`/${process.env.API_VERSION}/blogs/insert${authMiddleware, blogsController.insertBlog})
+router.post("/"+ process.env.API_VERSION +"/blogs/insert", authMiddleware, blogsController.insertBlog);
+router.put("/" + process.env.API_VERSION + "/blogs/edit/:blog_id", authMiddleware, blogsController.updateBlog);
+router.delete("/" + process.env.API_VERSION + "/blogs/delete/:blog_id", authMiddleware, blogsController.deleteBlog);
 router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
 router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
 router.get("/embeddedgames/:game_id", embeddedgameController.getGame);
 module.exports = router;
+

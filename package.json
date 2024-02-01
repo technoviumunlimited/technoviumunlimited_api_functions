@@ -2,6 +2,7 @@
   "dependencies": {
     "@google-cloud/storage": "^6.11.0",
     "dotenv": "^16.0.3",
-    "firebase": "^10.7.1"
+    "firebase": "^10.7.1",
+    "moment": "^2.30.1"
   }
 }

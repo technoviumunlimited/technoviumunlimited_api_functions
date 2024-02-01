@@ -36,28 +36,33 @@ module.exports = validateFirebaseIdToken = async (req, res, next) => {
   try {
     const decodedIdToken = await admin.auth().verifyIdToken(idToken);
     req.user = decodedIdToken; // User data is available in req.user
-    
+
     // Get user's custom claims to check for roles
     const uid = decodedIdToken.uid;
     const userRecord = await admin.auth().getUser(uid);
-    const customClaims = userRecord.customClaims;
 
-    if (customClaims && customClaims.role) {
-      req.user.role = customClaims.role; // Assign user's role to req.user.role
+    const userSnapshot = await admin.firestore().collection('user_groep1').doc(uid).get();
+  
+    if (userSnapshot.exists) {
+      const userRole = userSnapshot.data().roles;
+      console.log(userRole);
+    
+    // console.log('Gebruikerrechten:', userRecord);
+ 
 
       // Check roles and assign permissions based on roles
-      switch (req.user.role) {
+      switch (userRole) {
         case 'student':
           req.user.permissions = ['add_game'];
           break;
         case 'docent':
-          req.user.permissions = ['add_game', 'add_blog', 'add_comment'];
+          req.user.permissions = ['add_game', 'add_blog', 'add_comment','edit_blog'];
           break;
         case 'admin':
-          req.user.permissions = ['add_game', 'add_blog', 'add_comment', 'delete_all'];
+          req.user.permissions = ['add_game', 'add_blog', 'add_comment', 'delete_all','edit_blog'];
           break;
         default:
-          req.user.permissions = []; // No special permissions for other roles
+          req.user.permissions = ['niks']; // No special permissions for other roles
       }
     } else {
       // If no specific role claims are set, use a default role and permissions
