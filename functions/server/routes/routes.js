@@ -43,6 +43,7 @@ router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
 router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
 router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
 
+
 const validateInsertBlog = [
     body('title').notEmpty().withMessage('Title is required'),
     body('description').notEmpty().withMessage('Description is required'),
@@ -56,6 +57,7 @@ const validateInsertBlog = [
     next();
     },
     ];
+    
 
 router.post("/" + process.env.API_VERSION + "/blogs/insert", authMiddleware, validateInsertBlog , blogsController.insert);
 router.get("/embeddedgames/:game_id", embeddedgameController.getGame);

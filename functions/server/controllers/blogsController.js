@@ -221,12 +221,31 @@ exports.getBlogsCategories = async (req, res, next) => {
 
 exports.insert = async (req, res, next) => {
   if (req.user.role && req.user.role.includes('docent')) {
-    // Voer hier de logica uit voor de route
-    // res.send('Welkom bij de docent-only route!');
+    
+    try {
+      if (req.user.role && req.user.role.includes('docent')) {
 
-    await db.collection("blogs").set({"title" : "hello" , "description" : ""});
-    console.log("Record added!");
-    return res.status(201).send("Game lvl timestamp insert");
+      await db.collection("blogs_roy").add({
+        "title": req.body.title,
+        "description": req.body.description,
+        "active": req.body.active
+        });
+
+      return res.status(201).send("blog post inserted");
+
+      } else {
+      res.status (403).send('Geen toegang. Onvoldoende rechten.');
+      }} catch (err) {
+      console.error (err);
+      res.status (500).send();
+      }
+    
+    // Voer hier de logica uit voor de route
+    // res.send('succes');
+
+    // await db.collection("blogs").set({"title" : "hello" , "description" : ""});
+    // console.log("Record added!");
+    // return res.status(201).send("Game lvl timestamp insert");
 
 
 } else {
