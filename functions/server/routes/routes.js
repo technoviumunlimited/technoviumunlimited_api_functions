@@ -10,27 +10,6 @@ const blogsController = require("../controllers/blogsController");
 const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
-
-router.get("/"+ process.env.API_VERSION +"/teacher-only-route", authMiddleware, (req, res) => {
-    // Controleer of de gebruiker de rol "docent" heeft in de array
-    if (req.user.role && req.user.role.includes('docent')) {
-        // Voer hier de logica uit voor de route
-        res.send('Welkom bij de docent-only route!');
-    } else {
-        res.status(403).send('Geen toegang. Onvoldoende rechten.');
-    }
-});
-
-router.get("/"+ process.env.API_VERSION +"/admin-only-route", authMiddleware, (req, res) => {
-    // Controleer of de gebruiker de rol "docent" heeft in de array
-    if (req.user.role && req.user.role.includes('admin')) {
-        // Voer hier de logica uit voor de route
-        res.send('Welkom bij de admin-only route!');
-    } else {
-        res.status(403).send('Geen toegang. Onvoldoende rechten.');
-    }
-});
-
 router.get("/"+ process.env.API_VERSION +"/games", gameController.getGames);
 router.get("/"+ process.env.API_VERSION +"/games/:game_id", gameController.getGame);
 router.get("/"+ process.env.API_VERSION +"/level/:game_id/levels/:level_id/", scoreController.getLevelsOfGame);
@@ -39,9 +18,9 @@ router.get("/"+ process.env.API_VERSION +"/user/:user_id", authMiddleware, userC
 router.get("/" + process.env.API_VERSION +"/score/:game_id/users/level_data", scoreController.getLevelData)
 router.post("/" + process.env.API_VERSION +"/score/insert", authMiddleware, scoreController.insertLevelUserScoreData)
 router.post("/" + process.env.API_VERSION +"/score/insert/finished", authMiddleware, scoreController.insertLevelUserScoreDataFinished)
-router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
-router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
-router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
+// router.get("/" + process.env.API_VERSION + "/blogs", blogsController.getBlogs);
+// router.get("/" + process.env.API_VERSION + "/blogs/:blog_id", blogsController.getBlog);
+// router.get("/" + process.env.API_VERSION + "/blogscategories", blogsController.getBlogsCategories);
 
 
 const validateInsertBlog = [
@@ -60,5 +39,10 @@ const validateInsertBlog = [
     
 
 router.post("/" + process.env.API_VERSION + "/blogs/insert", authMiddleware, validateInsertBlog , blogsController.insert);
+router.get("/" + process.env.API_VERSION + "/blogs/getBlogs", authMiddleware, blogsController.getBlogs);
+router.put("/" + process.env.API_VERSION + "/blogs/update/:blog_id", authMiddleware, validateInsertBlog, blogsController.updateBlog);
+router.delete("/" + process.env.API_VERSION + "/blogs/delete/:blog_id", authMiddleware, blogsController.deleteBlog);
+
+
 router.get("/embeddedgames/:game_id", embeddedgameController.getGame);
 module.exports = router;
