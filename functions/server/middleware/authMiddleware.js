@@ -43,8 +43,8 @@ try {
 	const userId = decodedIdToken.uid;
 	console.log(userId);
 	// Rolgegevens ophalen uit de database (Firestore)
-	const userSnapshot = await admin.firestore().collection('user_groep2').doc(userId).get();
-  
+	const userSnapshot = await admin.firestore().collection('users').doc(userId).get();
+
 	if (userSnapshot.exists) {
 	  const userRole = userSnapshot.data().roles;
 		console.log(userRole);
