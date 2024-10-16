@@ -98,7 +98,7 @@ exports.insertLevelUserScoreDataFinished = async (req, res, next) => {
           .doc(userID)
           .update(data);
         console.log("Record added!");
-        return res.status(201).send("Game lvl timestamp insert");
+        return res.status(201).send(`user ID: ${userID}, level ID: ${levelID}, score started:`); // to do: add tiestamp
       
       } else{
         
