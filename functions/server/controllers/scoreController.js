@@ -1,44 +1,48 @@
+//database toevoegen en toegang tot firebase
 const { db, admin } = require("../models/db");
 
 exports.getLevelsOfGame = async (req, res, next) => {
-  let paramID = req.params.id;
+  let paramID = req.params.id; // Haalt het spel-ID op uit de URL.
   try {
     const scores = [];
     const query = await db
       .collection("games")
-      .get(paramID)
-      .collection("levels")
+      .get(paramID) // Probeer toegang te krijgen tot de "games" collectie.
+      .collection("levels") // Haalt de subcollectie "levels" op.
       .get();
 
     query.forEach((level) => levels.push({ ...level.data(), _id: level.id }));
+    // Loop door alle documenten in de query en voeg hun data toe aan een array.
 
-    res.status(200).json({ levels });
+    res.status(200).json({ levels }); // Stuur de verzamelde levels terug als JSON-response.
   } catch (err) {
-    console.error(err);
-    res.status(500).send();
+    console.error(err); // Log fouten naar de console.
+    res.status(500).send(); // Stuur een 500-status (serverfout).
   }
 };
 
 exports.getLevelData = async (req, res, next) => {
-  let paramID = req.params.game_id;
+  let paramID = req.params.game_id; // Haalt het spel-ID op uit de URL.
   try {
     score_users = [];
     level_datas = [];
 
     const query = await db
       .collection("games")
-      .doc(paramID)
+      .doc(paramID) // Selecteer een specifiek spel met het ID.
       .collection("levels")
-      .doc("1")
-      .collection("score_users")
-      .orderBy("started", "desc")
-      .limit(1)
+      .doc("1") // Selecteer level 1.
+      .collection("score_users") // Haal de scores van gebruikers op.
+      .orderBy("started", "desc") // Sorteer op startdatum (nieuwste eerst).
+      .limit(1) // Beperk tot één resultaat.
       .get();
+
     query.forEach((score_user) =>
       score_users.push({ ...score_user.data(), _id: score_user.id })
     );
+    // Voeg elke scoregebruiker toe aan de array.
 
-    console.log(score_users[0]._id);
+    console.log(score_users[0]._id); // Debug de ID van de eerste scoregebruiker.
 
     const query2 = await db
       .collection("games")
@@ -46,17 +50,19 @@ exports.getLevelData = async (req, res, next) => {
       .collection("levels")
       .doc("1")
       .collection("score_users")
-      .doc(score_users[0]._id)
-      .collection("level_data")
-      .orderBy("created", "desc") 
+      .doc(score_users[0]._id) // Gebruik de ID van de eerste scoregebruiker.
+      .collection("level_data") // Haal gegevens over het level op.
+      .orderBy("created", "desc") // Sorteer op aanmaakdatum.
       .limit(1)
       .get();
 
     query2.forEach((level_data) =>
       level_datas.push({ ...level_data.data(), bin: level_data.binary })
     );
-    binary = level_datas[0].binary;
-    res.status(200).json({ binary });
+    // Voeg de leveldata toe aan de array en sla een "bin"-veld op.
+
+    binary = level_datas[0].binary; // Haal de eerste "binary"-waarde op.
+    res.status(200).json({ binary }); // Stuur deze waarde terug in de response.
   } catch (err) {
     console.error(err);
     res.status(500).send();
@@ -71,7 +77,7 @@ exports.insertLevelUserScoreDataFinished = async (req, res, next) => {
   console.log(gameID);
   console.log(levelID);
 
-  try {
+  try { // Haal de 'start' tijd op
     const startedField = await db
       .collection("games")
       .doc(gameID)
