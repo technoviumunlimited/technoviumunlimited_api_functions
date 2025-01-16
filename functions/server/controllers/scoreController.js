@@ -1,157 +1,314 @@
+//database toevoegen en toegang tot firebase
 const { db, admin } = require("../models/db");
 
 exports.getLevelsOfGame = async (req, res, next) => {
-	let paramID = req.params.id;
-	try {
-		const scores = [];
-		const query = await db.collection("games").get(paramID).collection("levels").get();
+  let paramID = req.params.id; // Haalt het spel-ID op uit de URL.
+  try {
+    const scores = [];
+    const query = await db
+      .collection("games")
+      .get(paramID) // Probeer toegang te krijgen tot de "games" collectie.
+      .collection("levels") // Haalt de subcollectie "levels" op.
+      .get();
 
-		query.forEach((level) => levels.push({ ...level.data(), _id: level.id }));
+    query.forEach((level) => levels.push({ ...level.data(), _id: level.id }));
+    // Loop door alle documenten in de query en voeg hun data toe aan een array.
 
-		res.status(200).json({ levels });
-	} catch (err) {
-		console.error(err);
-		res.status(500).send();
-	}
+    res.status(200).json({ levels }); // Stuur de verzamelde levels terug als JSON-response.
+  } catch (err) {
+    console.error(err); // Log fouten naar de console.
+    res.status(500).send(); // Stuur een 500-status (serverfout).
+  }
 };
 
 exports.getLevelData = async (req, res, next) => {
-	let paramID = req.params.game_id;
-	try {
-		score_users = [];
-		level_datas = [];
+  let paramID = req.params.game_id; // Haalt het spel-ID op uit de URL.
+  try {
+    score_users = [];
+    level_datas = [];
 
-		const query = await db.collection("games").doc(paramID)
-							  .collection("levels").doc("1")
-							  .collection("score_users").orderBy("started", "desc").limit(1).get()
-		query.forEach((score_user) => score_users.push({...score_user.data(), _id: score_user.id}));
+    const query = await db
+      .collection("games")
+      .doc(paramID) // Selecteer een specifiek spel met het ID.
+      .collection("levels")
+      .doc("1") // Selecteer level 1.
+      .collection("score_users") // Haal de scores van gebruikers op.
+      .orderBy("started", "desc") // Sorteer op startdatum (nieuwste eerst).
+      .limit(1) // Beperk tot één resultaat.
+      .get();
 
-		console.log(score_users[0]._id)
+    query.forEach((score_user) =>
+      score_users.push({ ...score_user.data(), _id: score_user.id })
+    );
+    // Voeg elke scoregebruiker toe aan de array.
 
-		const query2 = await db.collection("games").doc(paramID)
-							  .collection("levels").doc("1")
-							  .collection("score_users")
-							  .doc(score_users[0]._id)
-							  .collection("level_data")
-							  .orderBy("created", "desc").limit(1).get();
-		
-		query2.forEach((level_data) => level_datas.push({...level_data.data(), bin: level_data.binary}));
-		binary = level_datas[0].binary;
-		res.status(200).json({binary});
-	}
-	catch (err) {
-		console.error(err);
-		res.status(500).send();
-	}
-}
+    console.log(score_users[0]._id); // Debug de ID van de eerste scoregebruiker.
 
+    const query2 = await db
+      .collection("games")
+      .doc(paramID)
+      .collection("levels")
+      .doc("1")
+      .collection("score_users")
+      .doc(score_users[0]._id) // Gebruik de ID van de eerste scoregebruiker.
+      .collection("level_data") // Haal gegevens over het level op.
+      .orderBy("created", "desc") // Sorteer op aanmaakdatum.
+      .limit(1)
+      .get();
+
+    query2.forEach((level_data) =>
+      level_datas.push({ ...level_data.data(), bin: level_data.binary })
+    );
+    // Voeg de leveldata toe aan de array en sla een "bin"-veld op.
+
+    binary = level_datas[0].binary; // Haal de eerste "binary"-waarde op.
+    res.status(200).json({ binary }); // Stuur deze waarde terug in de response.
+  } catch (err) {
+    console.error(err);
+    res.status(500).send();
+  }
+};
 exports.insertLevelUserScoreDataFinished = async (req, res, next) => {
-	let gameID = req.body.game_id;
-	let levelID = req.body.level_id;
-	let userID = req.user.user_id;
-	console.log(userID);
-	console.log(gameID);
-	console.log(levelID);
+  console.log("insertLevelUserScoreDataFinished");
+  let gameID = req.params.game_id;
+  let levelID = req.params.level_id;
+  let userID = req.user.user_id;
+  console.log(userID);
+  console.log(gameID);
+  console.log(levelID);
 
-		try{
-			
-			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
+  try { // Haal de 'start' tijd op
+    const startedField = await db
+      .collection("games")
+      .doc(gameID)
+      .collection("levels")
+      .doc(levelID)
+      .collection("score_users")
+      .doc(userID)
+      .get();
 
-			if (typeof startedField._fieldsProto.started == 'undefined' && startedField._fieldsProto.started == null) {
-				return res.status(200).send("You didn't even start the game");
-			}
+    if (
+      startedField.data() &&
+      typeof startedField.data().started !== "undefined" &&
+      startedField.data().started !== null
+    ) {
+      if (
+        typeof startedField._fieldsProto.finished == "undefined" &&
+        startedField._fieldsProto.finished == null
+      ) {
+        var data = {
+          finished: admin.firestore.FieldValue.serverTimestamp(),
+        };
+        console.log(startedField._fieldsProto.started);
 
+        await db
+          .collection("games")
+          .doc(gameID)
+          .collection("levels")
+          .doc(levelID)
+          .collection("score_users")
+          .doc(userID)
+          .update(data);
 
-			if (typeof startedField._fieldsProto.finished == 'undefined' && startedField._fieldsProto.finished == null) {		
+        console.log("Record added!");
 
-				var data = {
-					"finished" : admin.firestore.FieldValue.serverTimestamp()
-				}
+        // Haal de 'finished' tijd op
+        const finishedField = (
+          await db
+            .collection("games")
+            .doc(gameID)
+            .collection("levels")
+            .doc(levelID)
+            .collection("score_users")
+            .doc(userID)
+            .get()
+        ).data().finished;
 
-				console.log(startedField._fieldsProto.started);
+        if (finishedField) {
+          // Haal de 'finished' tijd in seconden op
+          const finishedSeconds = Math.floor(
+            finishedField.toDate().getTime() / 1000
+          );
 
-				await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).update(data);
-				console.log("Record added!");
-				return res.status(201).send("Game lvl timestamp insert");
-			 			
-			
-			//Show date, converted from firebase Timestamp:
-			var x = correctTimestamp; //gets the timestamp from firebase
-			var mydate = new Date(x);
-			[mydate.getMonth()];
-			[mydate.getDay()];
-			console.log("Firebase record, date/time: " + mydate.toString());		
-			
-			//Show date, converted from current Timestamp:
-			var y = Date.now();
-			var mydate = new Date(y);
-			console.log("Current date/time: " + mydate.toString());	
-		} else {
-			console.log("No timestamp exists currently");
-			await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"finished" : admin.firestore.FieldValue.serverTimestamp()});
-			console.log("Started field created and added timestamp");
-			return res.status(201).send();
-		}
+          // Haal de 'started' tijd in seconden op
+          const startedSeconds = Math.floor(
+            startedField.data().started.toDate().getTime() / 1000
+          );
 
-		} catch (error) {
-			console.error(error);
-			return res.status(500).send();
-		}
-		
-	}
+          // Bereken het verschil in seconden
+          const differenceInSeconds = finishedSeconds - startedSeconds;
+
+          console.log("Finished time in seconds:", finishedSeconds);
+          console.log("Started time in seconds:", startedSeconds);
+          console.log("Difference in seconds:", differenceInSeconds);
+
+          // Return de gegevens in de response
+          return res
+            .status(201)
+            .send(
+              `User ID: ${userID}, Level ID: ${levelID}, Finished time: ${finishedSeconds} seconds, Time difference: ${differenceInSeconds} seconds`
+            );
+        } else {
+          return res.status(200).send("The game has not been finished yet.");
+        }
+      } else {
+        return res.status(200).send("The game is already finished.");
+      }
+    } else {
+      return res.status(200).send("You didn't even start the game");
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
 
 exports.insertLevelUserScoreData = async (req, res, next) => {
-	let gameID = req.body.game_id;
-	let levelID = req.body.level_id;
-	let userID = req.user.user_id;
-	console.log(userID);
-	console.log(gameID);
-	console.log(levelID);
+  let gameID = req.params.game_id;
+  let levelID = req.params.level_id;
+  let userID = req.user.user_id;
+  console.log(userID);
+  console.log(gameID);
+  console.log(levelID);
+  //return res.status(400).send();
 
-		try{
-			
-			const startedField = await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).get();
+  try {
+    const startedField = await db
+      .collection("games")
+      .doc(gameID)
+      .collection("levels")
+      .doc(levelID)
+      .collection("score_users")
+      .doc(userID)
+      .get();
 
-			if (typeof startedField._fieldsProto.started !== 'undefined' && startedField._fieldsProto.started !== null) {		
+    if (
+      startedField.data() && // Controleer of er data is
+      typeof startedField.data().started !== "undefined" &&
+      startedField.data().started !== null
+    ) {
+      const seconds = startedField._fieldsProto.started.timestampValue.seconds;
+      const nanos = startedField._fieldsProto.started.timestampValue.nanos;
 
-			const seconds = (startedField._fieldsProto.started.timestampValue.seconds);
-			const nanos = (startedField._fieldsProto.started.timestampValue.nanos);
+      const nanosmath = nanos / 1000000;
 
-			const nanosmath = nanos/1000000;
+      const correctTimestamp = Math.floor(seconds * 1000 + nanosmath);
 
-			const correctTimestamp = Math.floor(seconds*1000 + nanosmath);
+      if (correctTimestamp <= Date.now() - 10000) {
+        console.log(
+          "Timestamp is 10 seconds or more older than the current Timestamp, posting new timestamp"
+        );
+        //return res.status(400).send();
 
-			if (correctTimestamp <= Date.now()-3600000) {
-				console.log("Timestamp is 1 hour or more older than the current Timestamp, posting new timestamp");
-				await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"started" : admin.firestore.FieldValue.serverTimestamp()});
-				console.log("Record added!");
-				return res.status(201).send("Game lvl timestamp insert");
-			} else {
-				console.log("Timestamp is NOT 1 hour or more older than the current Timestamp, no new record added to firebase");
-				return res.status(200).send("Timestamp is NOT 1 hour or more older than the current Timestamp, no new record added to firebase");
-			}
-			
-			//Show date, converted from firebase Timestamp:
-			var x = correctTimestamp; //gets the timestamp from firebase
-			var mydate = new Date(x);
-			[mydate.getMonth()];
-			[mydate.getDay()];
-			console.log("Firebase record, date/time: " + mydate.toString());		
-			
-			//Show date, converted from current Timestamp:
-			var y = Date.now();
-			var mydate = new Date(y);
-			console.log("Current date/time: " + mydate.toString());	
-		} else {
-			console.log("No timestamp exists currently");
-			await db.collection("games").doc(gameID).collection("levels").doc(levelID).collection("score_users").doc(userID).set({"started" : admin.firestore.FieldValue.serverTimestamp()});
-			console.log("Started field created and added timestamp");
-			return res.status(201).send();
-		}
+        await db
+          .collection("games")
+          .doc(gameID)
+          .collection("levels")
+          .doc(levelID)
+          .collection("score_users")
+          .doc(userID)
+          .set({ started: admin.firestore.FieldValue.serverTimestamp() });
+        console.log("Record added!");
+        const userDoc = await db
+          .collection("games")
+          .doc(gameID)
+          .collection("levels")
+          .doc(levelID)
+          .collection("score_users")
+          .doc(userID)
+          .get();
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          const timestampInsert = data.started;
 
-		} catch (error) {
-			console.error(error);
-			return res.status(500).send();
-		}
-		
-	}
+          if (timestampInsert && timestampInsert.toDate) {
+            // Converteer de Firestore Timestamp naar een ISO string
+            const timestampString = timestampInsert.toDate().toISOString();
+            console.log("Timestamp (as string):", timestampString);
+            // Stuur de timestamp-string als respons terug
+            return res
+              .status(201)
+              .send(
+                `user ID: ${userID}, level ID: ${levelID}, score started: ${timestampString}`
+              );
+          } else {
+            return res.status(500).send("Timestamp was not set correctly.");
+          }
+        } else {
+          return res.status(404).send("User document not found.");
+        }
+      } else {
+        console.log(
+          "Timestamp is NOT 10 seconds or more older than the current Timestamp, no new record added to firebase"
+        );
+        return res
+          .status(200)
+          .send(
+            "Timestamp is NOT 10 seconds or more older than the current Timestamp, no new record added to firebase"
+          );
+      }
+      //Show date, converted from firebase Timestamp:
+      var x = correctTimestamp; //gets the timestamp from firebase
+      var mydate = new Date(x);
+      [mydate.getMonth()];
+      [mydate.getDay()];
+      console.log("Firebase record, date/time: " + mydate.toString());
+
+      //Show date, converted from current Timestamp:
+      var y = Date.now();
+      var mydate = new Date(y);
+      console.log("Current date/time: " + mydate.toString());
+    } else {
+      console.log("No timestamp exists currently");
+      //return res.status(400).send();
+      var timestampInsert = admin.firestore.FieldValue.serverTimestamp();
+      await db
+        .collection("games")
+        .doc(gameID)
+        .collection("levels")
+        .doc(levelID)
+        .collection("score_users")
+        .doc(userID)
+        .set({ started: admin.firestore.FieldValue.serverTimestamp() });
+      console.log("Started field created and added timestamp");
+
+      const userDoc = await db
+        .collection("games")
+        .doc(gameID)
+        .collection("levels")
+        .doc(levelID)
+        .collection("score_users")
+        .doc(userID)
+        .get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+        const timestampInsert = data.started;
+
+        if (timestampInsert && timestampInsert.toDate) {
+          // Converteer de Firestore Timestamp naar een ISO string
+          const timestampString = timestampInsert.toDate().toISOString();
+          console.log("Timestamp (as string):", timestampString);
+
+          // Zet de ISO-timestamp om in seconden
+          const dateObject = new Date(timestampString);
+          const timestampInSeconds = Math.floor(dateObject.getTime() / 1000);
+
+          console.log("begin Timestamp in seconden:", timestampInSeconds);
+          // Stuur de timestamp-string als respons terug
+          return res
+            .status(201)
+            .send(
+              `user ID: ${userID}, level ID: ${levelID}, score started: ${timestampString}`
+            );
+        } else {
+          return res.status(500).send("Timestamp was not set correctly.");
+        }
+      } else {
+        return res.status(404).send("User document not found.");
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send();
+  }
+};
